@@ -2,7 +2,7 @@ const Skill = require('../models/Skill');
 const multer = require('multer');
 const path = require('path');
 
-// Set up multer for file uploads
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) =>{
         cb(null, 'uploads/');
@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Add a Skill
+
 exports.addSkill = async (req, res) => {
     try {
         const { name } = req.body;
@@ -27,7 +27,7 @@ exports.addSkill = async (req, res) => {
     }
 };
 
-// Get all Skills
+
 exports.getSkills = async (req, res) => {
     try {
         const skills = await Skill.find();
@@ -41,18 +41,18 @@ exports.updateSkill = async (req, res) => {
         const { name } = req.body;
         const photo = req.file ? req.file.filename : null;
 
-        // Find the skill by ID and update it
+       
         const skill = await Skill.findById(req.params.id);
 
         if (!skill) {
             return res.status(404).json({ message: 'Skill not found' });
         }
 
-        // Update the fields
+     
         if (name) skill.name = name;
         if (photo) skill.photo = photo;
 
-        // Save the updated skill
+       
         await skill.save();
 
         res.json(skill);
@@ -60,7 +60,7 @@ exports.updateSkill = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-// Delete a Skill
+
 exports.deleteSkill = async (req, res) => {
     try {
         const skill = await Skill.findByIdAndDelete(req.params.id);

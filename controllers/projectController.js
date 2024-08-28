@@ -2,7 +2,7 @@ const Project = require('../models/Project');
 const multer = require('multer');
 const path = require('path');
 
-// Multer setup for file uploads
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/');
@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Add a Project
+
 exports.addProject = async (req, res) => {
     try {
         const { name, title, link } = req.body;  // Ensure 'title' is included here
@@ -28,7 +28,6 @@ exports.addProject = async (req, res) => {
 };
 
 
-// Get all Projects
 exports.getProjects = async (req, res) => {
     try {
         const projects = await Project.find();
@@ -42,7 +41,7 @@ exports.updateProject = async (req, res) => {
         const { name, title, link } = req.body;
         const photo = req.file ? req.file.filename : null;
 
-        // Find the project by ID and update it
+        
         const project = await Project.findById(req.params.id);
 
         if (!project) {
@@ -55,7 +54,7 @@ exports.updateProject = async (req, res) => {
         if (link) project.link = link;
         if (photo) project.photo = photo;
 
-        // Save the updated project
+        
         await project.save();
 
         res.json(project);
@@ -72,5 +71,5 @@ exports.deleteProject = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-// Export upload middleware
+
 exports.upload = upload;

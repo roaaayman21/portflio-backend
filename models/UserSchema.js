@@ -14,11 +14,11 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         required: true,
-        minLength: 6, // Ensure password has a minimum length of 6 characters
+        minLength: 6, 
     }
 }, { timestamps: true });
 
-// Pre-save hook to hash the password
+
 userSchema.pre('save', async function(next) {
     if (!this.isModified('password')) return next();
     this.password = await bcrypt.hash(this.password, 10);

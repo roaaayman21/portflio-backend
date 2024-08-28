@@ -4,6 +4,6 @@ const { getAbout, addAbout, updateAbout, upload } = require('../controllers/abou
 
 router.get('/about', getAbout); 
 router.post('/about', upload.single('photo'), addAbout);
-router.put('/about/:id', upload.single('photo'), updateAbout);  // New update route
+router.put('/about/:id', upload.single('photo'), updateAbout); 
 
 module.exports = router;

@@ -2,7 +2,7 @@ const About = require('../models/About');
 const multer = require('multer');
 const path = require('path');
 
-// Set up multer for file uploads
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/');
@@ -14,7 +14,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Add or Update About Section
 exports.addAbout = async (req, res) => {
     try {
         const { description } = req.body;
@@ -32,7 +31,7 @@ exports.addAbout = async (req, res) => {
     }
 };
 
-// Get About Section
+
 exports.getAbout = async (req, res) => {
     try {
         const about = await About.findOne();
@@ -42,7 +41,7 @@ exports.getAbout = async (req, res) => {
     }
 };
 
-// Update About Section by ID
+
 exports.updateAbout = async (req, res) => {
     try {
         const { id } = req.params;

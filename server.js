@@ -1,31 +1,37 @@
+// server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
+const connectDb = require('./config/db');
+
+// Import routes
 const aboutRoutes = require('./routes/aboutRoutes');
 const skillRoutes = require('./routes/skillRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const userRoutes = require('./routes/userRoutes');
-const path = require('path');
-const connectDb = require('./config/db');
 
+// Initialize express app
 const app = express();
-connectDb();
+
+// Connect to MongoDB
+connectDb();  // This assumes connectDb is set up to handle your MongoDB connection
+
 // Enable CORS
 app.use(cors());
 
-// Connect to MongoDB
-// mongoose.connect('mongodb://localhost:27017/portfolio');
-    
-// Middleware to parse JSON
+// Middleware to parse JSON requests
 app.use(express.json());
 
-// Serve static files from the uploads directory
+// Serve static files (like images) from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Define API routes
 app.use('/api', aboutRoutes);
 app.use('/api', skillRoutes);
 app.use('/api', projectRoutes);
 app.use('/user', userRoutes);
 
-const PORT = 5000;
+// Start server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

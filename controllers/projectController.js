@@ -1,32 +1,20 @@
+// controllers/projectController.js
 const Project = require('../models/Project');
 const multer = require('multer');
-const path = require('path');
-
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({ storage: storage });
-
+const { storage } = require('../config/cloudinaryConfig');  // Import Cloudinary storage
+const upload = multer({ storage });
 
 exports.addProject = async (req, res) => {
     try {
-        const { name, title, link } = req.body;  // Ensure 'title' is included here
-        const photo = req.file ? req.file.filename : null;
-        const project = new Project({ name, title, link, photo }); // 'title' is now passed correctly
+        const { name, title, link } = req.body;
+        const photo = req.file ? req.file.path : null;  // Cloudinary path
+        const project = new Project({ name, title, link, photo });
         await project.save();
         res.json(project);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
-
 
 exports.getProjects = async (req, res) => {
     try {
@@ -36,32 +24,31 @@ exports.getProjects = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 exports.updateProject = async (req, res) => {
     try {
         const { name, title, link } = req.body;
-        const photo = req.file ? req.file.filename : null;
+        const photo = req.file ? req.file.path : null;
 
-        
         const project = await Project.findById(req.params.id);
 
         if (!project) {
             return res.status(404).json({ message: 'Project not found' });
         }
 
-        // Update the fields
+        // Update fields
         if (name) project.name = name;
         if (title) project.title = title;
         if (link) project.link = link;
         if (photo) project.photo = photo;
 
-        
         await project.save();
-
         res.json(project);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
 exports.deleteProject = async (req, res) => {
     try {
         const project = await Project.findByIdAndDelete(req.params.id);

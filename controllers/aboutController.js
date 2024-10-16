@@ -1,23 +1,14 @@
+// controllers/aboutController.js
 const About = require('../models/About');
 const multer = require('multer');
-const path = require('path');
+const { storage } = require('../config/cloudinaryConfig');  // Import Cloudinary storage
+const upload = multer({ storage });
 
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({ storage: storage });
 
 exports.addAbout = async (req, res) => {
     try {
         const { description } = req.body;
-        const photo = req.file ? req.file.filename : null;
+        const photo = req.file ? req.file.path : null;  // Cloudinary path
 
         const about = await About.findOneAndUpdate(
             {},
@@ -31,7 +22,6 @@ exports.addAbout = async (req, res) => {
     }
 };
 
-
 exports.getAbout = async (req, res) => {
     try {
         const about = await About.findOne();
@@ -41,23 +31,18 @@ exports.getAbout = async (req, res) => {
     }
 };
 
-
 exports.updateAbout = async (req, res) => {
     try {
         const { id } = req.params;
         const { description } = req.body;
-        const photo = req.file ? req.file.filename : null;
+        const photo = req.file ? req.file.path : null;
 
         const updatedData = { description };
-        if (photo) {
-            updatedData.photo = photo;
-        }
+        if (photo) updatedData.photo = photo;
 
         const about = await About.findByIdAndUpdate(id, updatedData, { new: true });
 
-        if (!about) {
-            return res.status(404).json({ message: 'About section not found' });
-        }
+        if (!about) return res.status(404).json({ message: 'About section not found' });
 
         res.json(about);
     } catch (error) {

@@ -1,45 +1,31 @@
 const express = require('express');
-const multer = require('multer');
-const { v2: cloudinary } = require('cloudinary');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const aboutRoutes = require('./routes/aboutRoutes');
+const skillRoutes = require('./routes/skillRoutes');
+const projectRoutes = require('./routes/projectRoutes');
+const userRoutes = require('./routes/userRoutes');
 const path = require('path');
-
-// Configure Cloudinary
-cloudinary.config({
-    cloud_name: 'dgrnbapwr', 
-  api_key: '249116354455991',
-  api_secret: '-RSp_WFJOGjNbJQGW-tQquOPsWc'
-});
-
-// Set up Multer to handle file uploads
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const connectDb = require('./config/db');
 
 const app = express();
+connectDb();
+// Enable CORS
+app.use(cors());
+
+// Connect to MongoDB
+// mongoose.connect('mongodb://localhost:27017/portfolio');
+    
+// Middleware to parse JSON
 app.use(express.json());
 
-// Endpoint to upload images to Cloudinary
-app.post('/upload', upload.single('image'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).send('No file uploaded');
-    }
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-    // Upload the file to Cloudinary
-    const uploadResult = await cloudinary.uploader.upload_stream({ folder: 'portfolio' }, (error, result) => {
-      if (error) {
-        return res.status(500).send('Error uploading image to Cloudinary');
-      }
-      res.status(200).json({ imageUrl: result.secure_url });
-    });
+app.use('/api', aboutRoutes);
+app.use('/api', skillRoutes);
+app.use('/api', projectRoutes);
+app.use('/user', userRoutes);
 
-    // Pipe the file buffer to the Cloudinary uploader
-    req.file.stream.pipe(uploadResult);
-
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('Server error');
-  }
-});
-
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

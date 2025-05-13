@@ -32,3 +32,14 @@ exports.login = async (req, res) => {
     );
     res.status(200).json({ token });
 };
+exports.resetPassword = async (req, res) => {
+    const { username, newPassword } = req.body;
+    const user = await User.findOne({ username });
+    if (!user) {
+        return res.status(404).json('User not found');
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+    res.status(200).json('Password updated successfully');
+};

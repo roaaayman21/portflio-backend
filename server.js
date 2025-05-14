@@ -13,6 +13,7 @@ const aboutRoutes = require('./routes/aboutRoutes');
 const skillRoutes = require('./routes/skillRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const userRoutes = require('./routes/userRoutes');
+const experienceRoutes = require('./routes/experienceRoutes');
 
 // Initialize express app
 const app = express();
@@ -33,6 +34,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api', aboutRoutes);
 app.use('/api', skillRoutes);
 app.use('/api', projectRoutes);
+app.use('/api', experienceRoutes);
 app.use('/user', userRoutes);
 
 // Add a status route to check ping statistics

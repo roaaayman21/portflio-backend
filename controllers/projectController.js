@@ -6,9 +6,18 @@ const upload = multer({ storage });
 
 exports.addProject = async (req, res) => {
     try {
-        const { name, title, link } = req.body;
-        const photo = req.file ? req.file.path : null;  // Cloudinary path
-        const project = new Project({ name, title, link, photo });
+     const { name, title, link, skills, githubLink } = req.body;
+const parsedSkills = skills ? JSON.parse(skills) : [];
+const photo = req.file ? req.file.path : null;
+
+const project = new Project({ 
+  name, 
+  title, 
+  link,           
+  photo, 
+  skills: parsedSkills, 
+  githubLink 
+});
         await project.save();
         res.json(project);
     } catch (error) {
@@ -27,23 +36,21 @@ exports.getProjects = async (req, res) => {
 
 exports.updateProject = async (req, res) => {
     try {
-        const { name, title, link } = req.body;
-        const photo = req.file ? req.file.path : null;
+       const { name, title, link, skills, githubLink } = req.body;
+const parsedSkills = skills ? JSON.parse(skills) : null;
 
-        const project = await Project.findById(req.params.id);
+const project = await Project.findById(req.params.id);
+if (!project) return res.status(404).json({ message: 'Project not found' });
 
-        if (!project) {
-            return res.status(404).json({ message: 'Project not found' });
-        }
+if (name) project.name = name;
+if (title) project.title = title;
+if (link) project.link = link;
+if (parsedSkills) project.skills = parsedSkills;
+if (githubLink) project.githubLink = githubLink;
+if (req.file) project.photo = req.file.path;
 
-        // Update fields
-        if (name) project.name = name;
-        if (title) project.title = title;
-        if (link) project.link = link;
-        if (photo) project.photo = photo;
-
-        await project.save();
-        res.json(project);
+await project.save();
+res.json(project);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
